@@ -1,0 +1,35 @@
+RailsアプリをDockerで開発するための手順
+http://qiita.com/togana/items/30b22fc39fe6f7a188ec
+
+＜特徴＞
+ローカルの環境にRubyを導入したくないのです(rbenvとかから開放されたい)。
+なのでrails newすらDockerを利用します。
+
+＜メモ＞
+記事中では標準のRubyイメージ ruby:2.3.0 を使用しているが、
+ここでは軽量ディストリ AlpineLinux のイメージを使用した。
+  ruby:2.3.3-alpine
+
+＜困りごと＞
+dockerイメージのruby/railsによってAppを生成していくわけだが、
+生成されたファイルが root:root になっており、
+都度 sudo chown -R vagrant:vagrant .
+しないといけないのが面倒。
+
+rubyすらインストールしないので、rake db:create や rails g xxx などのコマンドすら
+docker 経由で実行しないといけない。
+shellにaliasを定義しておくなど、便利に使うにはそれなりに色々やらないといけない。
+でも、考え方はすごく面白いし、色々作り込めば本当に便利かも。
+
+＜コマンド一覧＞
+
+docker run --rm -v "$PWD":/usr/src/new_app -w /usr/src/new_app leonjoel/new_app rails g scaffold Book isbn:string price:integer author:references published:date cd:boolean
+docker run --rm -v "$PWD":/usr/src/new_app -w /usr/src/new_app leonjoel/new_app rails d scaffold Book
+
+docker run --rm -v "$PWD":/usr/src/new_app -w /usr/src/new_app leonjoel/new_app rake db:migrate
+
+docker run -d -p 3000:3000 -v "$PWD":/usr/src/new_app leonjoel/new_app
+
+docker stop a22b013004cb
+docker restart a22b013004cb
+
