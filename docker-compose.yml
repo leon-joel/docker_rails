@@ -8,3 +8,8 @@ services:
       - '3000:3000'
     volumes:
       - .:/usr/src/new_app
+    links:
+      - db
+  db:
+    image: postgres
+ 
